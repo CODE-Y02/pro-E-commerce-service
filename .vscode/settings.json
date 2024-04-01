@@ -1,0 +1,5 @@
+{
+  "editor.wordWrap": "on",
+  "editor.formatOnSave": true,
+  "diffEditor.wordWrap": "off"
+}

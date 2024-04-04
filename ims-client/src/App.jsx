@@ -4,6 +4,7 @@ import { Routes, Route, BrowserRouter } from "react-router-dom";
 import {} from "react-router-dom";
 import SideBar from "./components/SideBar";
 import Shop from "./pages/Shop";
+import Home from "./pages/Home";
 
 const App = () => {
   return (
@@ -15,7 +16,7 @@ const App = () => {
           </div>
           <div className="p-3 bg-black text-white ml-[20%]  scrollbar-hide">
             <Routes>
-              <Route path="/" element={<p>Base Analytic component here</p>} />
+              <Route path="/" element={<Home />} />
               <Route path="/orders" element={<h2>hello orders</h2>} />
               <Route path="/shop/*" element={<Shop />} />
             </Routes>

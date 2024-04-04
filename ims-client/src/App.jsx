@@ -9,12 +9,14 @@ const App = () => {
   return (
     <>
       <BrowserRouter>
-        <div className="flex h-screen bg-neutral-900">
-          <SideBar />
-          <div className="flex-1 text-white">
+        <div className=" bg-neutral-900">
+          <div className="absolute top-0 left-0 w-8">
+            <SideBar />
+          </div>
+          <div className="p-3 bg-black text-white ml-[20%]  scrollbar-hide">
             <Routes>
               <Route path="/" element={<p>Base Analytic component here</p>} />
-              <Route path="/orders" element={"hi"} />
+              <Route path="/orders" element={<h2>hello orders</h2>} />
               <Route path="/shop/*" element={<Shop />} />
             </Routes>
           </div>

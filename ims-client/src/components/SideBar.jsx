@@ -20,10 +20,7 @@ const SidebarBtn = ({ text, icon, to }) => (
 
 const SideBar = () => {
   return (
-    <div
-      className="bg-neutral-800 flex-col gap-5 border-r-4 border-white border-opacity-50 text-white 
-     h-full sm:w-1/6"
-    >
+    <div className="bg-neutral-800 flex-col gap-5 border-r-4 border-white border-opacity-50 text-white fixed bottom-0 top-0 sm:w-[20%]">
       <h1 className="text-xl p-2 mb-5 text-center font-semibold border-b-2 border-green-300">
         Dashboard
       </h1>

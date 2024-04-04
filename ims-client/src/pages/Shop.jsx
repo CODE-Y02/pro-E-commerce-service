@@ -4,7 +4,7 @@ import { FaSearch } from "react-icons/fa";
 import DataTable from "../components/DataTable";
 
 const Shop = () => {
-  const [products, setProducts] = useState();
+  const [products, setProducts] = useState([]);
 
   useEffect(() => {
     const fecthProducts = async () => {
@@ -29,10 +29,13 @@ const Shop = () => {
   }, []);
 
   return (
-    <div className="flex flex-col gap-2 p-2 border-2 border-red-400 w-full h-screen">
+    <div className="flex flex-col gap-2 p-2 border-2 border-red-400 w-full">
+      {/* Cat */}
       <div className="border-2 border-red-400 ">categories</div>
-      <div className="border-2 border-red-400 ">
+
+      <div className="border-2 border-red-400">
         {/* nav for product */}
+
         <div className="flex gap-2 p-2 justify-between mx-4 my-2 border-2 border-green-400">
           <form
             className="flex p-1 items-center bg-white rounded-md text-black"
@@ -49,7 +52,7 @@ const Shop = () => {
         </div>
 
         {/* product list */}
-        <DataTable tableHeading={tableHeading} tableRows={products} />
+        <DataTable productData={products} />
       </div>
     </div>
   );

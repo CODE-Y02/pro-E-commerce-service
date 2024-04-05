@@ -18,6 +18,7 @@ This is NOT JUST PROJECT but an Production ready scalable application especially
 - React JS - its just a dashboard dont ask me why use react now pls.
 - Recoil JS - Its a redux alternative by meta & its much simpler.
 - React Router
+- I have decided to reduce complexity of dashboard it wont look good now
 
 ## NATIVE Client: Main Ecomm Client ( Upcoming)
 
@@ -33,7 +34,7 @@ This is NOT JUST PROJECT but an Production ready scalable application especially
 
 ---
 
-- UPDATED - 31/04/24 ( midnight coding )
+- UPDATED - 06/04/24 ( midnight coding )
 - STATUS:
-  - BACKEND: graphql server base ready ,nothing pushed.
-  - IMS : started but not ready
+  - BACKEND: graphql server base ready Bunch of apis already pushed
+  - IMS : Some stuff already pushed

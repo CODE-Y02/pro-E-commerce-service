@@ -14,7 +14,7 @@ const App = () => {
           <div className="absolute top-0 left-0 w-8">
             <SideBar />
           </div>
-          <div className="p-3 bg-black text-white ml-[20%]  scrollbar-hide">
+          <div className=" bg-black text-white ml-[20%]  scrollbar-hide">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/orders" element={<h2>hello orders</h2>} />

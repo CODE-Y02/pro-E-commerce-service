@@ -3,7 +3,7 @@ const User = require("../../../../models/User");
 const createUser = async (_, { input }, context) => {
   try {
     console.log("DEBUG >>>>>>>>>>>>>> \n", JSON.stringify(input));
-    const user = await new User(input).save();
+    const user = await new User(input).lean();
 
     return user;
   } catch (error) {

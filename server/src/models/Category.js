@@ -12,14 +12,6 @@ const categorySchema = new Schema(
       type: String,
       required: true,
     },
-
-    // one to many
-    products: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Product",
-      },
-    ],
   },
   {
     timestamps: true,

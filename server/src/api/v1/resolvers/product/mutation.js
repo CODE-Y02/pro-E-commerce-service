@@ -16,7 +16,7 @@ const createProduct = async (_, { input }, context) => {
 const updateroduct = async (_, { input }, context) => {
   const { mobile, ...updateData } = input;
   try {
-    const user = await User.updateOne({ mobile }, updateData);
+    const user = await Product.updateOne({ mobile }, updateData);
 
     return user;
   } catch (error) {

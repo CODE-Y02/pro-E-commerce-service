@@ -23,6 +23,7 @@ const productSchema = new Schema(
     varients: [
       {
         color: String,
+        imgUrl: String,
         price: { type: Number, required: true },
         size: String,
         stock: Number,
@@ -50,7 +51,7 @@ productSchema.statics.findOneProduct = async function (searchOpts) {
   Object.keys(searchOpts).forEach(
     (key) => searchOpts[key] === undefined && delete searchOpts[key]
   );
-  return await this.findOne(searchOpts).lean();
+  return await this.findOne(searchOpts);
 };
 
 module.exports = mongoose.model("Products", productSchema);

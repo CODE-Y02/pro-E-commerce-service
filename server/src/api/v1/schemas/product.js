@@ -3,119 +3,77 @@ module.exports = `
 type Product {
   _id: ID
   name: String
-  coverImg: String
-  additionalImages: [String]
-  category: ID
-  description: ProductDescription
-  productInfo: SubProduct
-  isFeatured: Boolean
-  ratings: Float
+  description: String
+  category: ID     
   reviews: [ID]
+  ratings: Float
+  varients: [ProductVarient]
+  published: Boolean
 }
 
-type ProductDescription {
-  description: [DescriptionItem]
-  specDetails: [SpecDetail]
+type PaginatedProducts {
+  products: [Product]
+  limit: Int
+  currentPage: Int
+  totalPages: Int
+  count: Int
 }
 
-type DescriptionItem {
-  heading: String
-  text: String
-  img: String
-}
-
-type SpecDetail {
-  specName: String
-  specs: [SpecItem]
-}
-
-type SpecItem {
-  name: String
-  value: String
-  highlighted: Boolean
-}
-
-type SubProduct {
+type ProductVarient {
   color: String
-  quantity: Int
-  img: [String]
-  onOffer: Boolean
-  priceInfo: ProductPrice
-}
-
-type ProductPrice {
-  mrp: Float
-  currentPrice: Float
-  discount: Float
+  imgUrl: String
+  price: Float
+  size: String
+  stock: Int
 }
 
 # here both Images are actual Img we will upload it to cloud and store url on db later
 input CreateProductInput {
   name: String!
-  coverImg: String! 
-  additionalImages: [String]
-  category: ID
-  description: ProductDescriptionInput
-  productInfo: SubProductInput!
-  isFeatured: Boolean
+  description: String
+  category: ID!    
+  varients: [VarientInput]!
+  published: Boolean = false
 
 }
 
 input UpdateProductInput {
   name: String
-  coverImg: String
-  additionalImages: [String]
-  category: ID
-  productInfo: SubProductInput
-  isFeatured: Boolean
-  ratings: Float
-  reviews: [ID]
+  description: String
+  category: ID    
+  varients: [VarientInput]
+  published: Boolean
 }
 
-input ProductDescriptionInput {
-  description: [DescriptionItemInput]
-  specDetails: [SpecDetailInput]
+input VarientInput {
+  color: String!
+  image: String
+  price: Float!
+  size: String
+  stock: Int!
 }
 
-input DescriptionItemInput {
-  heading: String
-  text: String
-  img: String
-}
-
-input SpecDetailInput {
-  specName: String
-  specs: [SpecItemInput]
-}
-
-input SpecItemInput {
+input searchProductInput {
+  id: ID
   name: String
-  value: String
-  highlighted: Boolean
+  category: ID     
+  published: Boolean
+  limit: Int
+  page: Int
+  sortBy: PRODUCT_SORT
 }
 
-input SubProductInput {
-  color: String
-  quantity: Int
-  img: [String]
-  onOffer: Boolean
-  priceInfo: ProductPriceInput
+enum PRODUCT_SORT {
+  rating
+  price
 }
 
-input ProductPriceInput {
-  mrp: Float
-  currentPrice: Float
-  discount: Float
+type Query {
+  getProducts(input :searchProductInput): PaginatedProducts!
 }
-
-enum ProductStatus {
-  IN_STOCK
-  OUT_OF_STOCK
-  DISCONTINUED
-}
-
-  
+ 
 type Mutation {
-    createProduct(input:CreateProductInput!): Product    
+    createProduct(input:CreateProductInput!): Product 
+    updateProduct(input:UpdateProductInput!): Product  
 }
 `;

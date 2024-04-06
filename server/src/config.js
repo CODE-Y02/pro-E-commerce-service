@@ -7,7 +7,7 @@ const CORS_URL = process.env.CORS_URL || "*";
 const NODE_ENV = process.env.NODE_ENV || "local";
 
 // DB config
-const DB_NAME = process.env.DB_NAME || "";
+const DB_NAME = process.env.DB_NAME || "lifestyle-ecomm";
 
 // Redis Config
 

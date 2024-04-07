@@ -20,6 +20,7 @@ type PaginatedProducts {
 }
 
 type ProductVarient {
+  id: String
   color: String
   imgUrl: String
   price: Float
@@ -38,10 +39,10 @@ input CreateProductInput {
 }
 
 input UpdateProductInput {
+  id:ID!
   name: String
   description: String
   category: ID    
-  varients: [VarientInput]
   published: Boolean
 }
 
@@ -63,6 +64,20 @@ input searchProductInput {
   sortBy: PRODUCT_SORT
 }
 
+input addVarientsInput {
+  productId: ID!
+  varients : [VarientInput]!
+}
+
+input updateVarientInput {
+ id: ID!    
+ color: String
+ image: String
+ price: Float
+ size: String
+ stock: Int
+}
+
 enum PRODUCT_SORT {
   rating
   price
@@ -74,6 +89,8 @@ type Query {
  
 type Mutation {
     createProduct(input:CreateProductInput!): Product 
-    updateProduct(input:UpdateProductInput!): Product  
+    updateProduct(input:UpdateProductInput!): Product
+    addVarients(input: addVarientsInput!): ProductVarient
+      
 }
 `;

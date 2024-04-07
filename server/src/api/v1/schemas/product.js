@@ -59,9 +59,19 @@ input searchProductInput {
   name: String
   category: ID     
   published: Boolean
+  filters: searchFiltersInput  
   limit: Int
   page: Int
-  sortBy: PRODUCT_SORT
+  sortBy: PRODUCT_SORT 
+}
+
+input searchFiltersInput {
+  includeOutOfStock: Boolean
+  color: [String]
+  minRating: Int
+  priceMin: Int
+  priceMax : Int
+  priceSort: SORT_ORDER
 }
 
 input addVarientsInput {
@@ -81,6 +91,12 @@ input updateVarientInput {
 enum PRODUCT_SORT {
   rating
   price
+  newlyadded
+}
+
+enum SORT_ORDER {
+  desc
+  asc
 }
 
 type Query {
@@ -90,7 +106,10 @@ type Query {
 type Mutation {
     createProduct(input:CreateProductInput!): Product 
     updateProduct(input:UpdateProductInput!): Product
+
+    # Varients Methods
     addVarients(input: addVarientsInput!): ProductVarient
-      
+    updateVarient(input: updateVarientInput!): ProductVarient
+
 }
 `;

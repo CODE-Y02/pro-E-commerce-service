@@ -8,6 +8,7 @@ const http = require("http");
 const cors = require("cors");
 
 const api = require("./api");
+const { seedInitData } = require("./seed");
 const app = express();
 
 const httpServer = http.createServer(app);
@@ -15,6 +16,11 @@ const httpServer = http.createServer(app);
 app.use(cors({ origin: "*" }));
 
 app.use(express.json());
+
+app.get("/load-static", (req, res) => {
+  seedInitData();
+  res.send("hi");
+});
 
 const startApollo = async () => {
   const server = new ApolloServer({
@@ -28,6 +34,7 @@ const startApollo = async () => {
   await server.start();
 
   app.use(
+    "/graphql",
     expressMiddleware(server, {
       context: async ({ req }) => ({ token: req.headers.token }),
     })

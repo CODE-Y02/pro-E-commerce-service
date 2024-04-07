@@ -6,7 +6,7 @@ const varientSchema = new Schema({
   id: {
     type: String,
     unique: true,
-    default: uuid.v5(),
+    default: uuid.v1(),
     index: true,
   },
   color: String,

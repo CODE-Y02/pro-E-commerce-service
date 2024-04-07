@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const uuid = require("uuid");
 const { Schema } = mongoose;
 
 const productSchema = new Schema(
@@ -22,11 +23,8 @@ const productSchema = new Schema(
     rating: Number,
     varients: [
       {
-        color: String,
-        imgUrl: String,
-        price: { type: Number, required: true },
-        size: String,
-        stock: Number,
+        type: Schema.Types.ObjectId,
+        required: true,
       },
     ],
     published: {

@@ -1,6 +1,6 @@
 # pro-ecomm-graphql
 
-This is NOT JUST PROJECT but an Production ready scalable application especially backend.
+This is NOT JUST PROJECT but an Professional and Scable backend
 
 ## BACKEND Stack
 
@@ -34,7 +34,10 @@ This is NOT JUST PROJECT but an Production ready scalable application especially
 
 ---
 
-- UPDATED - 06/04/24 ( midnight coding )
+- UPDATED - 09/04/24 ( midnight coding )
 - STATUS:
-  - BACKEND: graphql server base ready Bunch of apis already pushed
-  - IMS : Some stuff already pushed
+  - BACKEND: Restructured bunch of stuff, added seed data as well as robust write methods for products, cart & categories
+  - IMS : Some stuff already pushed, I will change it soon.....
+ 
+I am thnking on REDIS AS ITS NOT OPERNSOURCE ANYMORE 😞
+

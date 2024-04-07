@@ -2,17 +2,19 @@ const Product = require("../../../../models/Product");
 
 const getProducts = async (_, { input }, context) => {
   const {
+    id,
     name,
     category,
     published,
     limit = 10,
     page = 1,
     sortBy = "rating",
-    filters = { inStock: true },
+    filters = { includeOutOfStock: false },
   } = input;
   const query = {};
 
   // Filter options
+  if (id) query._id = id;
   if (name) query.name = { $regex: name, $options: "i" }; // Case-insensitive name search
   if (category) query.category = category;
   if (published !== undefined) query.published = published;
@@ -34,9 +36,9 @@ const getProducts = async (_, { input }, context) => {
 
     // Apply additional filtering based on varient fields
     if (filters) {
-      if (filters.inStock) {
+      if (filters.includeOutOfStock) {
         productsAggregation = productsAggregation.match({
-          "varients.stock": { $gt: 0 },
+          "varients.stock": { $eq: 0 },
         });
       }
       if (filters.colors && filters.colors.length > 0) {

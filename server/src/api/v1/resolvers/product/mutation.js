@@ -114,6 +114,6 @@ const updateVarient = async (_, { input }, context) => {
 module.exports = {
   createProduct,
   addVarients,
-  updateVarient,
+  // updateVarient,
   updateProduct,
 };

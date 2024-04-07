@@ -39,5 +39,5 @@ This is NOT JUST PROJECT but an Professional and Scable backend
   - BACKEND: Restructured bunch of stuff, added seed data as well as robust write methods for products, cart & categories
   - IMS : Some stuff already pushed, I will change it soon.....
  
-I am thnking on REDIS AS ITS NOT OPERNSOURCE ANYMORE 😞
+I am thnking on REDIS AS ITS NOT OPEN SOURCE ANYMORE 😞
 

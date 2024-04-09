@@ -18,7 +18,7 @@ input UpdateCategoryInput {
 }
 
 type Query {
-  getCategory(id: String, name: String): [Category]!
+  getCategory(id: String, name: String): [Category]
 }
  
 type Mutation {

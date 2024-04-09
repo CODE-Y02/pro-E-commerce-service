@@ -96,9 +96,10 @@ const getProducts = async (_, { input }, context) => {
 
     return {
       products,
-      totalCount,
+      count: totalCount,
       totalPages: Math.ceil(totalCount / limit),
       currentPage: page,
+      limit,
     };
   } catch (error) {
     console.log("getProducts Error:", error);

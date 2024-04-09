@@ -21,7 +21,6 @@ type CartItem {
   quantity: Int
 }
 
-
 enum USER_ROLE {
   Admin
   Support
@@ -37,7 +36,7 @@ input FindOneUserInput{
   id: ID
 }
 
-input CreateUserInput {
+input RegisterUserInput {
   username: String!
   email: String
   password: String!
@@ -55,22 +54,17 @@ input UpdateUserInput {
   role: USER_ROLE
 }
 
-input cartUpdateItemInput {
-  productId: ID!
-  quantity: Int!
-}
-
 type Query {
-  findOneUser(input :FindOneUserInput!): User
-  getCart: [CartWithProduct]
+  user(input :FindOneUserInput!): User
+  cart: [CartWithProduct]
 }
 
 type Mutation {
-  createUser(input:CreateUserInput!): User  
+  registerUser(input:RegisterUserInput!): User  
   updateUser(input: UpdateUserInput!): User
 
   # we can combine this with updateuser but it will be complex in PROD LEVEL CART is differnt model 
   
-  updateCart(productId:ID !, qty: Int!): [CartWithProduct]!
+  cart(productId:ID !, qty: Int!): [CartWithProduct]!
 }
 `;

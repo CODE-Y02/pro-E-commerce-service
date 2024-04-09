@@ -17,6 +17,9 @@ const findOneUser = async (_, { input }, context) => {
   }
 };
 
+const getCart = async (_, { input }, context) => {};
+
 module.exports = {
-  findOneUser,
+  user: findOneUser,
+  cart: getCart,
 };

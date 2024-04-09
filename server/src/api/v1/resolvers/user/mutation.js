@@ -2,8 +2,7 @@ const User = require("../../../../models/User");
 
 const createUser = async (_, { input }, context) => {
   try {
-    console.log("DEBUG >>>>>>>>>>>>>> \n", JSON.stringify(input));
-    const user = await new User(input).lean();
+    const user = await new User(input).save();
 
     return user;
   } catch (error) {
@@ -71,7 +70,7 @@ const updateCart = async (_, { input }, context) => {
 };
 
 module.exports = {
-  createUser,
+  registerUser: createUser,
   updateUser,
-  updateCart,
+  cart: updateCart,
 };

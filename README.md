@@ -1,6 +1,8 @@
 # pro-ecomm-graphql
 
-This is NOT JUST PROJECT but an Professional and Scable backend
+This is NOT JUST PROJECT but an Professional and Scable backend, At least a TRY to do so ..
+
+Feel Free To RAISE a Issue or raise PR .
 
 ## BACKEND Stack
 
@@ -36,8 +38,7 @@ This is NOT JUST PROJECT but an Professional and Scable backend
 
 - UPDATED - 09/04/24 ( midnight coding )
 - STATUS:
-  - BACKEND: Restructured bunch of stuff, added seed data as well as robust write methods for products, cart & categories
+  - BACKEND: Restructured bunch of stuff refactored and added a detailed notes on auth
   - IMS : Some stuff already pushed, I will change it soon.....
- 
-I am thnking on REDIS AS ITS NOT OPEN SOURCE ANYMORE 😞
 
+I am thnking on REDIS AS ITS NOT OPEN SOURCE ANYMORE 😞

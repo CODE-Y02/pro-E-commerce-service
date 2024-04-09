@@ -7,6 +7,7 @@ Going Forwared everything will be simple .
 > I am having some core features here only that any ecomm out there required.
 
 - CRUD operations on some data .
+- Auth implementation. ( API_KEY and JWT both)
 - Payments intregations.
 - Tracking of Orders.
 - Reviews & rating.
@@ -16,6 +17,12 @@ Going Forwared everything will be simple .
 
 - In actual Production application we never delete a publish data but hide them by using flags.
 - This is cause in tech data is money also can be used for many things ex: Auditing, Training LLM, Market research, etc.
+
+---
+
+### NOTES
+
+- [**Details Note On auth**](./AuthNotes.md)
 
 ---
 

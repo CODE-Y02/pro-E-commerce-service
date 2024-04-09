@@ -31,19 +31,20 @@ const formatError = (error) => {
   return {
     message: error.message,
     code: error.extensions.code || "INTERNAL_SERVER_ERROR",
-    path: error.path,
   };
 };
 
 // Custom response formatter
-const formatResponse = (response, { context }) => {
-  // Wrap response data and errors in a structured format
-  return {
-    data: response.data,
-    errors: response.errors ? response.errors.map(formatError) : null,
-    // Additional metadata can be included here if needed
-  };
-};
+// const formatResponse = (response, { context }) => {
+//   // Wrap response data and errors in a structured format
+
+//   console.log("DEBUG \n ", JSON.stringify(response));
+//   return {
+//     data: response.data,
+//     errors: response.errors ? response.errors.map(formatError) : null,
+//     // Additional metadata can be included here if needed
+//   };
+// };
 
 const startApollo = async () => {
   const server = new ApolloServer({
@@ -51,7 +52,7 @@ const startApollo = async () => {
     typeDefs: api.v1.schemas,
     // context: authenticateUser, // Pass the middleware function directly to context
     formatError, // Use custom error formatter
-    formatResponse, // Use custom response formatter
+    //formatResponse, // Use custom response formatter
 
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
   });

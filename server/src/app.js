@@ -9,6 +9,9 @@ const cors = require("cors");
 
 const api = require("./api");
 const { seedInitData } = require("./seed");
+
+const middlewares = require("./middlewares");
+
 const app = express();
 
 const httpServer = http.createServer(app);
@@ -22,11 +25,33 @@ app.get("/load-static", (req, res) => {
   res.send("hi");
 });
 
+// Custom error formatter
+const formatError = (error) => {
+  // Customize the error message and structure as needed
+  return {
+    message: error.message,
+    code: error.extensions.code || "INTERNAL_SERVER_ERROR",
+    path: error.path,
+  };
+};
+
+// Custom response formatter
+const formatResponse = (response, { context }) => {
+  // Wrap response data and errors in a structured format
+  return {
+    data: response.data,
+    errors: response.errors ? response.errors.map(formatError) : null,
+    // Additional metadata can be included here if needed
+  };
+};
+
 const startApollo = async () => {
   const server = new ApolloServer({
-    // ...api.v1,
     resolvers: api.v1.resolvers,
     typeDefs: api.v1.schemas,
+    // context: authenticateUser, // Pass the middleware function directly to context
+    formatError, // Use custom error formatter
+    formatResponse, // Use custom response formatter
 
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
   });

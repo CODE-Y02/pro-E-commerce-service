@@ -8,6 +8,7 @@ const NODE_ENV = process.env.NODE_ENV || "local";
 
 // DB config
 const DB_NAME = process.env.DB_NAME || "lifestyle-ecomm";
+const MONGODB_URI = `${process.env.MONGODB_URI}`;
 
 // Redis Config
 
@@ -20,4 +21,5 @@ module.exports = {
   CORS_URL,
   NODE_ENV,
   DB_NAME,
+  MONGODB_URI,
 };

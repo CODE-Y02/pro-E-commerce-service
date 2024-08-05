@@ -1,16 +1,14 @@
 const mongoose = require("mongoose");
 
-const { DB_NAME } = require("../config");
+const { DB_NAME, MONGODB_URI } = require("../config");
 
 const connectDB = async () => {
   try {
+    console.log(MONGODB_URI);
+
     const connectionInstance = await mongoose.connect(
-      `${process.env.MONGODB_URI}/${DB_NAME}`,
-      {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        autoIndex: true, // Automatically build indexes defined in your schema
-      }
+      // `mongodb://root:password@localhost:27017`
+      MONGODB_URI
     );
 
     console.log(

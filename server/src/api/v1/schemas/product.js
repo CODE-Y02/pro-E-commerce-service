@@ -76,7 +76,7 @@ input searchFiltersInput {
   priceSort: SORT_ORDER
 }
 
-input addVVariantInput {
+input addVariantInput {
   productId: ID!
   variants : [VariantInput]!
 }

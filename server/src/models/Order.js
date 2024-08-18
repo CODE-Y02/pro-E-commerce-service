@@ -35,7 +35,7 @@ const orderSchema = new Schema(
       status: {
         type: String,
         required: true,
-        enum: ["shipped", "delivered", "inprocess"],
+        enum: ["shipped", "delivered", "processing", "cancelled"],
       },
       trackingUrl: String, // Shiping tracking url
     },

@@ -1,15 +1,16 @@
 const Product = require("../../../.../../../models/Product");
+const Variant = require("../../../../models/Variant");
 
 const createProduct = async (_, { input }, context) => {
-  const { varients, ...rest } = input;
+  const { variants, ...rest } = input;
   let productRes;
   const session = await Product.startSession();
   try {
     session.startTransaction();
     // Create variants within the transaction
-    const _varients = await Varients.create(varients, { session: session });
+    const _variants = await Variant.create(variants, { session: session });
     // Create product and include variants
-    const product = new Product({ ...rest, varients: _varients });
+    const product = new Product({ ...rest, variants: _variants });
     // Save the product within the transaction
     productRes = await product.save({ session: session });
     // Commit the transaction if everything succeeds
@@ -25,32 +26,32 @@ const createProduct = async (_, { input }, context) => {
   }
 };
 
-const addVarients = async (_, { input }, context) => {
+const addVariants = async (_, { input }, context) => {
   const session = await Product.startSession();
   session.startTransaction();
 
   try {
-    const { productId, ...varientsData } = input;
+    const { productId, ...variantsData } = input;
 
     // Create new variants within the transaction
-    const newVarients = await Varients.create(varientsData, { session });
+    const newVariants = await Variant.create(variantsData, { session });
 
-    // Update the product document to push the newly created variant's IDs into the varients array
+    // Update the product document to push the newly created variant's IDs into the variants array
     const updatedProduct = await Product.findByIdAndUpdate(
       productId,
       {
         $push: {
-          varients: { $each: newVarients.map((varient) => varient._id) },
+          variants: { $each: newVariants.map((variant) => variant._id) },
         },
       },
       { new: true, session }
-    ).populate("varients");
+    ).populate("variants");
 
     // Commit the transaction if all operations succeed
     await session.commitTransaction();
     session.endSession();
 
-    return updatedProduct.varients;
+    return updatedProduct.variants;
   } catch (error) {
     // If any error occurs, abort the transaction
     await session.abortTransaction();
@@ -86,14 +87,14 @@ const updateProduct = async (_, { input }, context) => {
   }
 };
 
-const updateVarient = async (_, { input }, context) => {
-  const session = await Varients.startSession();
+const updateVariant = async (_, { input }, context) => {
+  const session = await Variant.startSession();
   session.startTransaction();
 
   try {
     const { id, ...updateData } = input;
 
-    const updatedVarient = await Varients.findByIdAndUpdate(id, updateData, {
+    const updatedVariant = await Variant.findByIdAndUpdate(id, updateData, {
       new: true,
       session,
     });
@@ -101,19 +102,19 @@ const updateVarient = async (_, { input }, context) => {
     await session.commitTransaction();
     session.endSession();
 
-    return updatedVarient;
+    return updatedVariant;
   } catch (error) {
     await session.abortTransaction();
     session.endSession();
 
-    console.log("updateVarient Error:", error);
+    console.log("updateVariant Error:", error);
     throw error;
   }
 };
 
 module.exports = {
   createProduct,
-  addVarients,
-  // updateVarient,
+  addVariants,
+  updateVariant,
   updateProduct,
 };

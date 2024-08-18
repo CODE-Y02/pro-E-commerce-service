@@ -7,7 +7,7 @@ type Product {
   category: ID     
   reviews: [ID]
   ratings: Float
-  varients: [ProductVarient]
+  variants: [ProductVariant]
   published: Boolean
 }
 
@@ -19,9 +19,11 @@ type PaginatedProducts {
   count: Int
 }
 
-type ProductVarient {
+type ProductVariant {
   id: String
   color: String
+  name: String
+  description: [String]
   imgUrl: String
   price: Float
   size: String
@@ -33,7 +35,7 @@ input CreateProductInput {
   name: String!
   description: String
   category: ID!    
-  varients: [VarientInput]!
+  variants: [VariantInput]!
   published: Boolean = false
 
 }
@@ -46,7 +48,7 @@ input UpdateProductInput {
   published: Boolean
 }
 
-input VarientInput {
+input VariantInput {
   color: String!
   image: String
   price: Float!
@@ -74,12 +76,12 @@ input searchFiltersInput {
   priceSort: SORT_ORDER
 }
 
-input addVarientsInput {
+input addVVariantInput {
   productId: ID!
-  varients : [VarientInput]!
+  variants : [VariantInput]!
 }
 
-input updateVarientInput {
+input updateVariantInput {
  id: ID!    
  color: String
  image: String
@@ -107,9 +109,9 @@ type Mutation {
     createProduct(input:CreateProductInput!): Product 
     updateProduct(input:UpdateProductInput!): Product
 
-    # Varients Methods
-    addVarients(input: addVarientsInput!): ProductVarient
-    updateVarient(input: updateVarientInput!): ProductVarient
+    # Variants Methods
+    addVariants(input: addVariantInput!): ProductVariant
+    updateVariant(input: updateVariantInput!): ProductVariant
 
 }
 `;

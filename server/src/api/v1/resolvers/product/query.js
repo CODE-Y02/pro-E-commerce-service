@@ -23,13 +23,13 @@ const getProducts = async (_, { input }, context) => {
     let productsAggregation = Product.aggregate([
       // Match products based on query filters
       { $match: query },
-      // Lookup varients to filter based on varient fields
+      // Lookup variants to filter based on variant fields
       {
         $lookup: {
-          from: "varients",
-          localField: "varients",
+          from: "variants",
+          localField: "variants",
           foreignField: "_id",
-          as: "varients",
+          as: "variants",
         },
       },
     ]);
@@ -38,17 +38,17 @@ const getProducts = async (_, { input }, context) => {
     if (filters) {
       if (filters.includeOutOfStock) {
         productsAggregation = productsAggregation.match({
-          "varients.stock": { $eq: 0 },
+          "variants.stock": { $eq: 0 },
         });
       }
       if (filters.colors && filters.colors.length > 0) {
         productsAggregation = productsAggregation.match({
-          "varients.color": { $in: filters.colors },
+          "variants.color": { $in: filters.colors },
         });
       }
       if (filters.size && filters.size.length > 0) {
         productsAggregation = productsAggregation.match({
-          "varients.size": { $in: filters.size },
+          "variants.size": { $in: filters.size },
         });
       }
       if (filters.minRating) {
@@ -61,7 +61,7 @@ const getProducts = async (_, { input }, context) => {
         if (filters.priceMin) priceFilter.$gte = filters.priceMin;
         if (filters.priceMax) priceFilter.$lte = filters.priceMax;
         productsAggregation = productsAggregation.match({
-          "varients.price": priceFilter,
+          "variants.price": priceFilter,
         });
       }
     }
@@ -70,14 +70,14 @@ const getProducts = async (_, { input }, context) => {
     if (sortBy) {
       if (sortBy === "price") {
         productsAggregation = productsAggregation.addFields({
-          minPrice: { $min: "$varients.price" },
-          maxPrice: { $max: "$varients.price" },
+          minPrice: { $min: "$variants.price" },
+          maxPrice: { $max: "$variants.price" },
         });
         sortBy =
           filters && filters.priceSort === "desc" ? "maxPrice" : "minPrice";
       } else if (sortBy === "newlyadded") {
         productsAggregation = productsAggregation.addFields({
-          maxDate: { $max: "$varients.createdAt" },
+          maxDate: { $max: "$variants.createdAt" },
         });
         sortBy = "maxDate";
       }

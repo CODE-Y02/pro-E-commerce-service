@@ -21,10 +21,11 @@ const productSchema = new Schema(
       },
     ],
     rating: Number,
-    varients: [
+    variants: [
       {
         type: Schema.Types.ObjectId,
         required: true,
+        ref: "Variant",
       },
     ],
     published: {

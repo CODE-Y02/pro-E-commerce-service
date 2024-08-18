@@ -1,5 +1,14 @@
 const Product = require("../../../../models/Product");
 
+const PRODUCT_SORT = {
+  rating_desc: "rating_desc",
+  rating_asc: "rating_asc",
+  price_low_to_high: "price_low_to_high",
+  price_high_to_low: "price_high_to_low",
+  date_add: "date_add",
+  date_add_desc: "date_add_desc",
+};
+
 const getProducts = async (_, { input }, context) => {
   const {
     id,
@@ -8,12 +17,12 @@ const getProducts = async (_, { input }, context) => {
     published,
     limit = 10,
     page = 1,
-    sortBy = "rating",
+    sortBy,
     filters = { includeOutOfStock: false },
   } = input;
   const query = {};
 
-  // Filter options
+  // Basic filters
   if (id) query._id = id;
   if (name) query.name = { $regex: name, $options: "i" }; // Case-insensitive name search
   if (category) query.category = category;
@@ -32,15 +41,25 @@ const getProducts = async (_, { input }, context) => {
           as: "variants",
         },
       },
+      // Unwind variants to filter and sort them individually
+      { $unwind: { path: "$variants", preserveNullAndEmptyArrays: true } }, // Change: Added $unwind to handle variant filtering
     ]);
 
-    // Apply additional filtering based on varient fields
+    // Apply additional filtering based on variant fields
     if (filters) {
       if (filters.includeOutOfStock) {
         productsAggregation = productsAggregation.match({
-          "variants.stock": { $eq: 0 },
+          $or: [
+            { "variants.stock": { $exists: false } },
+            { "variants.stock": { $gt: 0 } },
+          ],
+        });
+      } else {
+        productsAggregation = productsAggregation.match({
+          $or: [{ "variants.stock": { $gt: 0 } }],
         });
       }
+
       if (filters.colors && filters.colors.length > 0) {
         productsAggregation = productsAggregation.match({
           "variants.color": { $in: filters.colors },
@@ -68,21 +87,46 @@ const getProducts = async (_, { input }, context) => {
 
     // Sorting
     if (sortBy) {
-      if (sortBy === "price") {
-        productsAggregation = productsAggregation.addFields({
-          minPrice: { $min: "$variants.price" },
-          maxPrice: { $max: "$variants.price" },
-        });
-        sortBy =
-          filters && filters.priceSort === "desc" ? "maxPrice" : "minPrice";
-      } else if (sortBy === "newlyadded") {
-        productsAggregation = productsAggregation.addFields({
-          maxDate: { $max: "$variants.createdAt" },
-        });
-        sortBy = "maxDate";
+      switch (sortBy) {
+        case PRODUCT_SORT.price_low_to_high:
+          // Add field for minimum price and sort
+          productsAggregation = productsAggregation.addFields({
+            minPrice: { $min: "$variants.price" },
+          });
+          productsAggregation = productsAggregation.sort({ minPrice: 1 });
+          break;
+
+        case PRODUCT_SORT.price_high_to_low:
+          // Add field for maximum price and sort
+          productsAggregation = productsAggregation.addFields({
+            maxPrice: { $max: "$variants.price" },
+          });
+          productsAggregation = productsAggregation.sort({ maxPrice: -1 });
+          break;
+
+        case PRODUCT_SORT.rating_asc:
+          // Sort by rating ascending
+          productsAggregation = productsAggregation.sort({ rating: 1 });
+          break;
+
+        case PRODUCT_SORT.rating_desc:
+          // Sort by rating descending
+          productsAggregation = productsAggregation.sort({ rating: -1 });
+          break;
+
+        case PRODUCT_SORT.date_add:
+          // Sort by creation date ascending
+          productsAggregation = productsAggregation.sort({ createdAt: 1 });
+          break;
+
+        case PRODUCT_SORT.date_add_desc:
+          // Sort by creation date descending
+          productsAggregation = productsAggregation.sort({ createdAt: -1 });
+          break;
+
+        default:
+          break;
       }
-      const sortOrder = sortBy === "desc" ? -1 : 1;
-      productsAggregation = productsAggregation.sort({ [sortBy]: sortOrder });
     }
 
     // Count the total number of documents matching the query
@@ -92,6 +136,7 @@ const getProducts = async (_, { input }, context) => {
     const skip = (page - 1) * limit;
     productsAggregation = productsAggregation.skip(skip).limit(limit);
 
+    // Execute the aggregation pipeline
     const products = await productsAggregation.exec();
 
     return {

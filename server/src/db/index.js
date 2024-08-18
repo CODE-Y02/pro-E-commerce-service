@@ -8,7 +8,7 @@ const connectDB = async () => {
 
     const connectionInstance = await mongoose.connect(
       // `mongodb://root:password@localhost:27017`
-      MONGODB_URI
+      `${MONGODB_URI}/${DB_NAME}`
     );
 
     console.log(

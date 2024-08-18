@@ -12,7 +12,7 @@ const MONGODB_PORT = process.env.MONGODB_PORT || 27017;
 const MONGO_PASS = process.env.MONGO_PASSWORD || "password";
 
 const MONGODB_URI =
-  process.env.MONGODB_URI ??
+  process.env.MONGODB_URI ?? 
   `mongodb://${process.env.MONGO_USER}:${MONGO_PASS}@localhost:${MONGODB_PORT}`;
 
 // Redis Config

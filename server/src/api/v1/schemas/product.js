@@ -4,7 +4,7 @@ type Product {
   _id: ID
   name: String
   modelNumber: String
-  description: String
+  description: [String]
   color: String
   imgUrl: String
   price: Float
@@ -66,7 +66,7 @@ input searchProductInput {
 }
 
 input searchFiltersInput {
-  includeOutOfStock: Boolean
+  includeOutOfStock: Boolean 
   minRating: Int
   priceMin: Int
   priceMax : Int

@@ -24,9 +24,10 @@ const getProducts = async (_, { input }) => {
 
   const query = {};
 
-  if (id) query._id = mongoose.Types.ObjectId(id);
+  if (id) query._id = mongoose.Types.ObjectId.createFromHexString(id);
   if (name) query.name = { $regex: name, $options: "i" };
-  if (category) query.category = mongoose.Types.ObjectId(category);
+  if (category)
+    query.category = mongoose.Types.ObjectId.createFromHexString(category);
   if (published !== undefined) query.published = published;
 
   try {
@@ -34,15 +35,17 @@ const getProducts = async (_, { input }) => {
       { $match: query },
       {
         $match: {
-          ...(filters.includeOutOfStock ? {} : { stock: { $gt: 0 } }),
-          ...(filters.colors ? { color: { $in: filters.colors } } : {}),
-          ...(filters.size ? { size: { $in: filters.size } } : {}),
-          ...(filters.minRating ? { rating: { $gte: filters.minRating } } : {}),
-          ...(filters.priceMin || filters.priceMax
+          ...(filters?.includeOutOfStock ? {} : { stock: { $gt: 0 } }),
+          ...(filters?.colors ? { color: { $in: filters.colors } } : {}),
+          ...(filters?.size ? { size: { $in: filters.size } } : {}),
+          ...(filters?.minRating
+            ? { rating: { $gte: filters.minRating } }
+            : {}),
+          ...(filters?.priceMin || filters?.priceMax
             ? {
                 price: {
-                  ...(filters.priceMin ? { $gte: filters.priceMin } : {}),
-                  ...(filters.priceMax ? { $lte: filters.priceMax } : {}),
+                  ...(filters?.priceMin ? { $gte: filters?.priceMin } : {}),
+                  ...(filters?.priceMax ? { $lte: filters?.priceMax } : {}),
                 },
               }
             : {}),

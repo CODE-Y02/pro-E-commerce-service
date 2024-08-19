@@ -58,11 +58,17 @@ const getProducts = async (_, { input }) => {
         totalDocs: "count",
         docs: "products",
         totalPages: "totalPages",
-        currentPage: "currentPage",
+        page: "currentPage",
       },
     };
 
-    return await Product.aggregatePaginate(productsAggregation, options);
+    const response = await Product.aggregatePaginate(
+      productsAggregation,
+      options
+    );
+
+    // console.log("DEBUG", response);
+    return response;
   } catch (error) {
     console.error("getProducts Error:", error);
     throw new Error("Failed to get products");

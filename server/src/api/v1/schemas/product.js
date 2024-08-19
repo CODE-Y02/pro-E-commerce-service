@@ -24,6 +24,8 @@ type PaginatedProducts {
   currentPage: Int
   totalPages: Int
   count: Int
+  hasPrevPage: Boolean
+  hasNextPage: Boolean
 }
 
 

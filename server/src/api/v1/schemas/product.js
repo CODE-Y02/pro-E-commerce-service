@@ -3,12 +3,19 @@ module.exports = `
 type Product {
   _id: ID
   name: String
+  modelNumber: String
   description: String
+  color: String
+  imgUrl: String
+  price: Float
+  size: String
+  stock: Int
   category: ID     
   reviews: [ID]
-  ratings: Float
-  variants: [ProductVariant]
+  rating: Float
   published: Boolean
+  createdAt: String
+  updatedAt: String
 }
 
 type PaginatedProducts {
@@ -19,25 +26,17 @@ type PaginatedProducts {
   count: Int
 }
 
-type ProductVariant {
-  id: String
-  color: String
-  name: String
-  description: [String]
-  imgUrl: String
-  price: Float
-  size: String
-  stock: Int
-}
 
 # here both Images are actual Img we will upload it to cloud and store url on db later
 input CreateProductInput {
   name: String!
+  modelNumber: String!
   description: String
   category: ID!    
-  variants: [VariantInput]!
+  price: Float!
+  stock: Int!
   published: Boolean = false
-
+  imageUrl: String
 }
 
 input UpdateProductInput {
@@ -46,14 +45,10 @@ input UpdateProductInput {
   description: String
   category: ID    
   published: Boolean
-}
-
-input VariantInput {
-  color: String!
-  image: String
-  price: Float!
-  size: String
-  stock: Int!
+  price: Float
+  stock: Int
+  modelNumber: String
+  imgUrl: String
 }
 
 input searchProductInput {
@@ -61,45 +56,29 @@ input searchProductInput {
   name: String
   category: ID     
   published: Boolean
+  modelNumber: String
   filters: searchFiltersInput  
   limit: Int
   page: Int
-  sortBy: PRODUCT_SORT 
+  sortBy: PRODUCT_SORT
 }
 
 input searchFiltersInput {
   includeOutOfStock: Boolean
-  color: [String]
   minRating: Int
   priceMin: Int
   priceMax : Int
-  priceSort: SORT_ORDER
-}
-
-input addVariantInput {
-  productId: ID!
-  variants : [VariantInput]!
-}
-
-input updateVariantInput {
- id: ID!    
- color: String
- image: String
- price: Float
- size: String
- stock: Int
 }
 
 enum PRODUCT_SORT {
-  rating
-  price
-  newlyadded
+  rating_desc
+  rating_asc
+  price_low_to_high
+  price_high_to_low
+  date_add
+  date_add_desc
 }
 
-enum SORT_ORDER {
-  desc
-  asc
-}
 
 type Query {
   getProducts(input :searchProductInput): PaginatedProducts!
@@ -108,10 +87,6 @@ type Query {
 type Mutation {
     createProduct(input:CreateProductInput!): Product 
     updateProduct(input:UpdateProductInput!): Product
-
-    # Variants Methods
-    addVariants(input: addVariantInput!): ProductVariant
-    updateVariant(input: updateVariantInput!): ProductVariant
 
 }
 `;

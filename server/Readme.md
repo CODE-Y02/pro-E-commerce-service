@@ -50,11 +50,18 @@ Going Forwared everything will be simple .
 #### 3. Products
 
     Name
+    modelNumber
     description
+    color
+    imgUrl
+    price
+    size
+    stock
+
     category : ref
-    variants: [{color , price , size, stock}]
     published
     reviews : [review : ref]
+    rating
 
 #### 4. Review
 

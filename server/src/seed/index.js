@@ -18,50 +18,32 @@ const seedInitData = async () => {
   // }
 
   const _categories = await createCat();
-  const promiseArr = _categories.map(
-    async (cat) => await createProductWithVariant(cat)
-  );
+  const promiseArr = _categories.map(async (cat) => await createProduct(cat));
 
   await Promise.all(promiseArr);
 };
 
-const createProductWithVariant = async (cat) => {
+const createProduct = async (cat) => {
   const API_URL = `https://fakestoreapi.com/products/category/${cat.name}`;
-  console.log(API_URL);
 
   const data = await (await fetch(API_URL)).json();
 
-  const arr = data.map(async (prod) => {
-    const variant = await createVariant(prod);
-    await Product.create({
-      name: prod.title,
-      description: prod.description,
-      variants: [...variant],
-      category: cat._id,
-    });
-  });
+  const arr = data.map(
+    async (prod) =>
+      await Product.create({
+        name: prod.title,
+        modelNumber: prod.id,
+        description: prod.description,
+        price: Number(prod.price),
+        stock: Math.round(Math.random() * 100),
+        rating: Number(prod.rating?.rate),
+        category: cat._id,
+      })
+  );
 
   await Promise.all(arr);
-};
 
-const createVariant = async (data) => {
-  const colors = ["red", "blue", "black"];
-
-  try {
-    const variant = await Variant.create([
-      {
-        color: colors[Math.floor(Math.random() * colors.length)],
-        imageUrl: data.image,
-        price: Math.round(Math.random() * 1000),
-        stock: Math.round(Math.random() * 100),
-      },
-    ]);
-
-    return variant;
-  } catch (error) {
-    console.log("Error creating variant ", data, error);
-    return null;
-  }
+  console.log("SEEDED PRODUCTS  for category " + cat.name);
 };
 
 const createCat = async () => {

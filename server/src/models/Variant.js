@@ -10,7 +10,6 @@ const variantSchema = new Schema({
     index: true,
   },
   name: String,
-  description: [String],
   color: String,
   imgUrl: String,
   price: { type: Number, required: true },

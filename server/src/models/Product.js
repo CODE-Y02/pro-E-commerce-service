@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const uuid = require("uuid");
 const { Schema } = mongoose;
 const mongoosePaginate = require("mongoose-aggregate-paginate-v2");
 

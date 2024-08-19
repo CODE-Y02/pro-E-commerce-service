@@ -28,7 +28,7 @@ const getProducts = async (_, { input }) => {
   if (name) query.name = { $regex: name, $options: "i" };
   if (category)
     query.category = mongoose.Types.ObjectId.createFromHexString(category);
-  if (published !== undefined) query.published = published;
+  if (typeof published === "boolean") query.published = published;
 
   try {
     const productsAggregation = Product.aggregate([
@@ -36,16 +36,14 @@ const getProducts = async (_, { input }) => {
       {
         $match: {
           ...(filters?.includeOutOfStock ? {} : { stock: { $gt: 0 } }),
-          ...(filters?.colors ? { color: { $in: filters.colors } } : {}),
-          ...(filters?.size ? { size: { $in: filters.size } } : {}),
-          ...(filters?.minRating
-            ? { rating: { $gte: filters.minRating } }
-            : {}),
+          ...(filters?.colors && { color: { $in: filters.colors } }),
+          ...(filters?.size && { size: { $in: filters.size } }),
+          ...(filters?.minRating && { rating: { $gte: filters.minRating } }),
           ...(filters?.priceMin || filters?.priceMax
             ? {
                 price: {
-                  ...(filters?.priceMin ? { $gte: filters?.priceMin } : {}),
-                  ...(filters?.priceMax ? { $lte: filters?.priceMax } : {}),
+                  ...(filters?.priceMin && { $gte: filters?.priceMin }),
+                  ...(filters?.priceMax && { $lte: filters?.priceMax }),
                 },
               }
             : {}),

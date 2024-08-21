@@ -38,6 +38,7 @@ const createProduct = async (cat) => {
         stock: Math.round(Math.random() * 100),
         rating: Number(prod.rating?.rate),
         category: cat._id,
+        imgUrl: prod?.image,
       })
   );
 

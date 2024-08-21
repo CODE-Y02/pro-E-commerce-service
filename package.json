@@ -1,0 +1,16 @@
+{
+  "name": "professional_js_e-commerce_project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "keywords": [],
+  "author": "yatharth",
+  "contributors": [
+    "github.com/code-y02"
+  ],
+  "license": "ISC",
+  "scripts": {
+    "server:dev": "cd server && npm run dev",
+    "sui": "cd sui && bun dev"
+  }
+}

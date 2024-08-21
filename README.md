@@ -1,4 +1,4 @@
-# pro-ecomm-graphql
+# Professional E-commerce System with detailed documentation.
 
 This is NOT JUST PROJECT but an Professional and Scalable backend, At least a TRY to do so ..
 

@@ -1,39 +1,60 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
-// Middleware function for API key authentication
-const authenticateWithAPIKey = (req, res, next) => {
+// Middleware to validate API key
+const API_KEY = "your-secret-api-key"; // Store this securely
+
+const apiKeyMiddleware = (req, res, next) => {
   const apiKey = req.headers["x-api-key"];
 
-  if (!apiKey || apiKey !== "your_api_key") {
-    return res.status(401).json({ message: "API key is required and invalid" });
+  if (apiKey && apiKey === API_KEY) {
+    next();
+  } else {
+    res.status(401).json({ error: "Unauthorized" });
   }
-
-  next();
 };
 
-// Middleware function for JWT authentication
-const authenticateWithJWT = async (req) => {
-  const token = req.headers.authorization || "";
+// Middleware to validate JWT token
+const JWT_SECRET = "your-jwt-secret"; // Store this securely
+const jwtMiddleware = (req, res, next) => {
+  const token = req.headers["authorization"]?.split(" ")[1]; // Token will be like 'Bearer + token'
 
-  try {
-    if (!token) {
-      // If no token is provided, return an empty context
-      return {};
+  if (token) {
+    jwt.verify(token, JWT_SECRET, (err, decoded) => {
+      if (err) {
+        return res.status(403).json({ error: "Forbidden" });
+      }
+      req.user = decoded;
+      next();
+    });
+  } else {
+    req.user = null; // No token means no user
+    next();
+  }
+};
+
+/**
+ * @description Checks for User after Jwt Authentication
+ * @param {Express.Request} req
+ * @param {Express.Response} res
+ * @param {any} next
+ */
+const checkUser = async (req, res, next) => {
+  if (req.user) {
+    try {
+      const user = await User.findById(req.user.id);
+      if (!user) {
+        throw new Error("User not found");
+      }
+      req.user = user;
+      next();
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ error: "Internal Server Error" });
     }
-
-    const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-    const userId = decodedToken.userId;
-
-    // Fetch user data based on the user ID
-    const user = await User.findById(userId); // Implement this function to fetch user data from database
-
-    // Attach user information to the context
-    return { user };
-  } catch (error) {
-    // If token verification fails or user is not found, return an empty context
-    return {};
+  } else {
+    res.status(401).json({ error: "Unauthorized" });
   }
 };
 
-module.exports = { authenticateWithJWT, authenticateWithAPIKey };
+module.exports = { jwt: jwtMiddleware, apiKey: apiKeyMiddleware, checkUser };

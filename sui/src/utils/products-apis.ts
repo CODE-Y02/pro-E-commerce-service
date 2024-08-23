@@ -58,6 +58,8 @@ export const getProducts = async (
     });
     const data = await res.json();
 
+    // console.log(data);
+
     return data?.data?.getProducts;
   } catch (error) {
     console.log(error);

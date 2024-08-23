@@ -5,6 +5,7 @@ import {
   HomeIcon,
   Menu,
   Package2Icon,
+  PlusCircleIcon,
   TagIcon,
   UsersRoundIcon,
 } from "lucide-react";
@@ -21,6 +22,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import CustomNavLink from "./custom-navlink";
+import AddProductBtn from "./add-product-btn";
 
 type Props = {};
 
@@ -81,6 +83,9 @@ function HomeHeader({}: Props) {
             />
           </div>
         </form> */}
+
+        <AddProductBtn />
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="secondary" size="icon" className="rounded-full">

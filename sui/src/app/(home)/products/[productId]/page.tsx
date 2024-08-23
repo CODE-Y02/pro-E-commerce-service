@@ -4,7 +4,7 @@ import React from "react";
 
 type ProductPagePropsTypes = {
   params: {
-    id: string;
+    productId: string;
   };
   searchParams: {
     edit: boolean;
@@ -12,7 +12,8 @@ type ProductPagePropsTypes = {
 };
 
 async function ProductPage({ params, searchParams }: ProductPagePropsTypes) {
-  const productRes = await getProducts({ id: params.id });
+  console.log(params.productId);
+  const productRes = await getProducts({ id: params.productId });
 
   if (!productRes?.products.length)
     return <div className="">No Product found</div>;

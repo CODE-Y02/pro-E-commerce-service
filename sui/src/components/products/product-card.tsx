@@ -62,6 +62,7 @@ const ProductCard = ({
             // width={100}
             // height={100}
             fill={true}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             style={{ objectFit: "contain" }}
           />
           <p className="absolute bottom-5 bg-green-400 bg-opacity-70 ">

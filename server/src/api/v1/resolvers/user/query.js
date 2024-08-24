@@ -17,7 +17,7 @@ const findOneUser = async (_, { input }, context) => {
   }
 };
 
-const getCart = async (_, _, context) => {
+const getCart = async (_, __, context) => {
   const userId = context.user.id;
   const cart = await User.findById(userId).select("cart").lean();
   return cart;

@@ -27,16 +27,6 @@ async function ProductPage({ params, searchParams }: ProductPagePropsTypes) {
   return (
     <div className="">
       <ProductForm product={product} isNew={false} />
-      {/* <p>{params.id}</p>
-      <p>{product.name}</p>
-      <Image
-        src={product.imgUrl || ""}
-        height={200}
-        width={200}
-        alt={product.name}
-      />
-      <p>{category.name}</p>
-      <p>{product.price}</p> */}
     </div>
   );
 }

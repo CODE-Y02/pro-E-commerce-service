@@ -25,7 +25,7 @@ const updateUser = async (_, { input }, context) => {
 
 const updateCart = async (_, { input }, context) => {
   const { productId, quantity } = input;
-  const userId = context.userId;
+  const userId = context.user?.id;
 
   try {
     // Find the user by ID and select only the cart field

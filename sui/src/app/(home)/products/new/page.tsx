@@ -5,7 +5,7 @@ type Props = {};
 
 function page() {
   return (
-    <div className="bg-red-400 w-full h-56">
+    <div className="w-full h-56">
       <ProductForm isNew />
     </div>
   );

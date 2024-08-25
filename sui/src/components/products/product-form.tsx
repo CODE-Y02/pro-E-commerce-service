@@ -13,11 +13,13 @@ import React, {
   useReducer,
   ChangeEvent,
   FormEvent,
+  useRef,
 } from "react";
 import { Button } from "../ui/button";
 import { getCategory } from "@/utils/categories-api";
 import { createProduct, updateProduct } from "@/utils/products-apis";
 import Spinner from "../spinner";
+import { useRouter } from "next/navigation";
 
 // Action Types
 type Action =
@@ -25,7 +27,8 @@ type Action =
   | { type: "SET_IMAGE_PREVIEW"; payload: string }
   | { type: "SET_CATEGORIES"; payload: CategoryInterface[] }
   | { type: "SET_LOADING"; payload: boolean }
-  | { type: "SET_ERROR"; payload: string | null };
+  | { type: "SET_ERROR"; payload: string | null }
+  | { type: "CLEAR_ERROR" };
 
 // Initial State Type
 interface State {
@@ -69,6 +72,8 @@ const reducer = (state: State, action: Action): State => {
       return { ...state, loading: action.payload };
     case "SET_ERROR":
       return { ...state, error: action.payload };
+    case "CLEAR_ERROR":
+      return { ...state, error: null };
     default:
       return state;
   }
@@ -81,6 +86,9 @@ type Props = {
 
 const ProductForm: React.FC<Props> = ({ product, isNew }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const router = useRouter();
 
   const fetchCategoryData = useCallback(async () => {
     dispatch({ type: "SET_LOADING", payload: true });
@@ -116,6 +124,7 @@ const ProductForm: React.FC<Props> = ({ product, isNew }) => {
 
   const createOrUpdateProduct = useCallback(async () => {
     dispatch({ type: "SET_LOADING", payload: true });
+    let response;
     try {
       const {
         _id,
@@ -128,8 +137,9 @@ const ProductForm: React.FC<Props> = ({ product, isNew }) => {
         stock,
         modelNumber,
       } = state.productData;
+
       if (isNew) {
-        await createProduct({
+        response = await createProduct({
           category,
           description,
           imgUrl,
@@ -139,8 +149,9 @@ const ProductForm: React.FC<Props> = ({ product, isNew }) => {
           stock,
           modelNumber,
         } as createProductInputType);
+        // reload the product
       } else if (product?._id) {
-        await updateProduct({
+        response = await updateProduct({
           id: _id,
           category,
           description,
@@ -152,7 +163,9 @@ const ProductForm: React.FC<Props> = ({ product, isNew }) => {
           modelNumber,
         } as updateProductInputType);
       }
-      alert("Success!");
+
+      dispatch({ type: "SET_ERROR", payload: "" });
+      router.push(`/products/${response._id}`);
     } catch {
       dispatch({
         type: "SET_ERROR",
@@ -161,14 +174,14 @@ const ProductForm: React.FC<Props> = ({ product, isNew }) => {
     } finally {
       dispatch({ type: "SET_LOADING", payload: false });
     }
-  }, [isNew, product?._id, state.productData]);
+  }, [isNew, product?._id, router, state.productData]);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     createOrUpdateProduct();
   };
 
-  const handleChange = (e: any): void => {
+  const handleChange = (e: any) => {
     const { name, value, type, files, checked } = e.target;
 
     if (type === "file" && files) {
@@ -187,6 +200,23 @@ const ProductForm: React.FC<Props> = ({ product, isNew }) => {
       dispatch({ type: "SET_PRODUCT_DATA", payload: { [name]: value } });
     }
   };
+
+  useEffect(() => {
+    if (state.error) {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      timeoutRef.current = setTimeout(() => {
+        dispatch({ type: "CLEAR_ERROR" });
+      }, 5000); // Message will disappear after 5 seconds
+    }
+
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [state.error]);
 
   const { productData, imgPreview, categories, loading, error } = state;
 

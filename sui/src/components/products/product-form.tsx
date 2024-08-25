@@ -1,229 +1,359 @@
 "use client";
 
 import { CategoryInterface } from "@/types/category";
-import { ProductInterface } from "@/types/product";
+import {
+  createProductInputType,
+  ProductInterface,
+  updateProductInputType,
+} from "@/types/product";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useReducer,
+  ChangeEvent,
+  FormEvent,
+} from "react";
 import { Button } from "../ui/button";
 import { getCategory } from "@/utils/categories-api";
+import { createProduct, updateProduct } from "@/utils/products-apis";
 
-type Props = {
-  product?: ProductInterface;
-  isNew: boolean;
-};
+// Action Types
+type Action =
+  | { type: "SET_PRODUCT_DATA"; payload: Partial<ProductInterface> }
+  | { type: "SET_IMAGE_PREVIEW"; payload: string }
+  | { type: "SET_CATEGORIES"; payload: CategoryInterface[] }
+  | { type: "SET_LOADING"; payload: boolean }
+  | { type: "SET_ERROR"; payload: string | null };
 
-function ProductForm({ product, isNew }: Props) {
-  // Initialize state with default values
-  const [productData, setProductData] = useState<Partial<ProductInterface>>({
+// Initial State Type
+interface State {
+  productData: Partial<ProductInterface>;
+  imgPreview: string;
+  categories: CategoryInterface[];
+  loading: boolean;
+  error: string | null;
+}
+
+// Initial State
+const initialState: State = {
+  productData: {
     name: "",
     price: 0,
     imgUrl: "",
     stock: 0,
     published: false,
     category: "",
-    description: [], // Ensure description is always an array
-  });
+    description: [],
+  },
+  imgPreview: "",
+  categories: [],
+  loading: false,
+  error: null,
+};
 
-  const [imgPreview, setImagePreview] = useState("");
-  const [categories, setCategories] = useState<CategoryInterface[]>([]);
+// Reducer Function
+const reducer = (state: State, action: Action): State => {
+  switch (action.type) {
+    case "SET_PRODUCT_DATA":
+      return {
+        ...state,
+        productData: { ...state.productData, ...action.payload },
+      };
+    case "SET_IMAGE_PREVIEW":
+      return { ...state, imgPreview: action.payload };
+    case "SET_CATEGORIES":
+      return { ...state, categories: action.payload };
+    case "SET_LOADING":
+      return { ...state, loading: action.payload };
+    case "SET_ERROR":
+      return { ...state, error: action.payload };
+    default:
+      return state;
+  }
+};
 
-  // Fetch category data on component mount
-  useEffect(() => {
-    const fetchCategoryData = async () => {
+type Props = {
+  product?: ProductInterface;
+  isNew: boolean;
+};
+
+const ProductForm: React.FC<Props> = ({ product, isNew }) => {
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  const fetchCategoryData = useCallback(async () => {
+    dispatch({ type: "SET_LOADING", payload: true });
+    try {
       const cat = await getCategory({});
-      if (cat) {
-        setCategories(cat);
-      }
-    };
-
-    fetchCategoryData();
+      dispatch({ type: "SET_CATEGORIES", payload: cat || [] });
+    } catch (error) {
+      dispatch({ type: "SET_ERROR", payload: "Error fetching categories." });
+    } finally {
+      dispatch({ type: "SET_LOADING", payload: false });
+    }
   }, []);
 
-  // Update form data when `product` or `isNew` changes
+  useEffect(() => {
+    fetchCategoryData();
+  }, [fetchCategoryData]);
+
   useEffect(() => {
     if (isNew) {
-      // Reset form for new product
-      setProductData({
-        name: "",
-        price: 0,
-        imgUrl: "",
-        stock: 0,
-        published: false,
-        category: "",
-        description: [], // Default to an empty array
-      });
-      setImagePreview("");
+      dispatch({ type: "SET_PRODUCT_DATA", payload: initialState.productData });
+      dispatch({ type: "SET_IMAGE_PREVIEW", payload: "" });
     } else if (product?._id) {
-      // Set form data from existing product
-      setProductData({
-        ...product,
-        description: Array.isArray(product.description)
-          ? product.description
-          : [], // Ensure description is an array
+      dispatch({
+        type: "SET_PRODUCT_DATA",
+        payload: {
+          ...product,
+          description: Array.isArray(product.description)
+            ? product.description
+            : [],
+        },
       });
-      setImagePreview(product.imgUrl || "");
+      dispatch({ type: "SET_IMAGE_PREVIEW", payload: product.imgUrl || "" });
     }
   }, [product, isNew]);
 
-  // Handle form submission
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    if (isNew) {
-      // Create new product
-    } else {
-      // Update existing product
+  const createOrUpdateProduct = useCallback(async () => {
+    dispatch({ type: "SET_LOADING", payload: true });
+    try {
+      if (isNew) {
+        await createProduct(state.productData as createProductInputType);
+      } else if (product?._id) {
+        await updateProduct({
+          id: product._id,
+          ...state.productData,
+        } as updateProductInputType);
+      }
+    } catch (error) {
+      dispatch({
+        type: "SET_ERROR",
+        payload: "Error creating/updating product.",
+      });
+    } finally {
+      dispatch({ type: "SET_LOADING", payload: false });
     }
+  }, [isNew, product, state.productData]);
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
+    e.preventDefault();
+    createOrUpdateProduct();
   };
 
-  // Handle input changes
-  const handleChange = (e: any) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ): void => {
     const { name, value, type, files, checked } = e.target;
 
     if (type === "file" && files) {
       const file = files[0];
-      setProductData({ ...productData, [name]: file });
-      setImagePreview(URL.createObjectURL(file));
+      dispatch({
+        type: "SET_PRODUCT_DATA",
+        payload: { imgUrl: URL.createObjectURL(file) },
+      });
+      dispatch({
+        type: "SET_IMAGE_PREVIEW",
+        payload: URL.createObjectURL(file),
+      });
     } else if (type === "checkbox") {
-      setProductData({ ...productData, [name]: checked });
+      dispatch({ type: "SET_PRODUCT_DATA", payload: { [name]: checked } });
     } else {
-      setProductData({ ...productData, [name]: value });
+      dispatch({ type: "SET_PRODUCT_DATA", payload: { [name]: value } });
     }
   };
 
+  const { productData, imgPreview, categories, loading, error } = state;
+
   return (
     <div className="bg-white border-2 border-gray-400 rounded-lg border-opacity-50 p-2">
+      {loading && <p>Loading...</p>}
+      {error && <p className="text-red-500">{error}</p>}
       <form onSubmit={handleSubmit}>
         <div className="flex flex-wrap justify-between gap-4 lg:gap-8 lg:p-4 items-center">
           <div className="flex flex-col flex-1 gap-4 p-2">
-            {/* Name Input */}
-            <div className="flex flex-wrap items-center">
-              <p className="font-semibold text-lg lg:w-1/5">Name:</p>
-              <input
-                className="p-2 ring-2 flex-1"
-                type="text"
-                name="name"
-                required
-                value={productData.name || ""} // Ensure controlled component
-                onChange={handleChange}
-              />
-            </div>
-
-            {/* Model Number Input */}
-            <div className="flex flex-wrap items-center">
-              <p className="font-semibold text-lg lg:w-1/5">Model Number:</p>
-              <input
-                className="p-2 ring-2"
-                type="text"
-                name="modelNumber"
-                value={productData.modelNumber || ""} // Ensure controlled component
-                onChange={handleChange}
-              />
-            </div>
-
-            {/* Price Input */}
-            <div className="flex flex-wrap items-center">
-              <p className="font-semibold text-lg lg:w-1/5">Price:</p>
-              <input
-                className="p-2 ring-2"
-                type="number"
-                name="price"
-                value={productData.price || ""} // Ensure controlled component
-                onChange={handleChange}
-              />
-            </div>
-
-            {/* Stock Input */}
-            <div className="flex flex-wrap items-center">
-              <p className="font-semibold text-lg lg:w-1/5">Stock:</p>
-              <input
-                className="p-2 ring-2"
-                type="number"
-                name="stock"
-                value={productData.stock || ""} // Ensure controlled component
-                onChange={handleChange}
-              />
-            </div>
-
-            {/* Published Checkbox */}
+            <FormInput
+              label="Name"
+              name="name"
+              value={productData.name || ""}
+              onChange={handleChange}
+              required
+            />
+            <FormInput
+              label="Model Number"
+              name="modelNumber"
+              value={productData.modelNumber || ""}
+              onChange={handleChange}
+            />
+            <FormInput
+              label="Price"
+              name="price"
+              type="number"
+              value={productData.price || ""}
+              onChange={handleChange}
+            />
+            <FormInput
+              label="Stock"
+              name="stock"
+              type="number"
+              value={productData.stock || ""}
+              onChange={handleChange}
+            />
             <div className="flex flex-wrap items-center">
               <p className="font-semibold text-lg lg:w-1/5">Published:</p>
               <input
                 className="p-2 ring-2"
                 type="checkbox"
                 name="published"
-                checked={productData.published || false} // Ensure controlled component
+                checked={productData.published || false}
                 onChange={handleChange}
               />
             </div>
-
-            {/* Category Select */}
-            <div className="flex flex-wrap items-center">
-              <p className="font-semibold text-lg lg:w-1/5">Category:</p>
-              <select
-                name="category"
-                value={productData.category || ""} // Ensure controlled component
-                onChange={handleChange}
-                className="p-2 ring-2"
-              >
-                <option value="" disabled>
-                  Select a category
-                </option>
-                {categories.map((cat) => (
-                  <option key={cat._id} value={cat._id}>
-                    {cat.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Description Textarea */}
-            <div className="flex flex-wrap items-center">
-              <p className="font-semibold text-lg lg:w-1/5">Description:</p>
-              <textarea
-                className="p-2 ring-2 flex-1 h-16"
-                name="description"
-                value={
-                  Array.isArray(productData.description)
-                    ? productData.description.join("\n\n")
-                    : ""
-                } // Ensure controlled component
-                onChange={(e) =>
-                  setProductData({
-                    ...productData,
-                    description: e.target.value.split("\n\n"),
-                  })
-                }
-              />
-            </div>
-          </div>
-
-          {/* Image Upload */}
-          <label className="flex flex-col px-2 py-4 shadow-lg shadow-slate-400 rounded-xl items-center justify-between h-fit bg-yellow-50">
-            {imgPreview && (
-              <Image
-                src={imgPreview}
-                alt={productData.name || product?.name || "Image Preview"}
-                height={100}
-                width={100}
-                style={{ width: "auto", height: "auto" }}
-              />
-            )}
-            <input
-              className="p-2"
-              type="file"
-              name="imgUrl"
-              onChange={handleChange} // Handle file input
+            <FormSelect
+              label="Category"
+              name="category"
+              value={productData.category || ""}
+              onChange={handleChange}
+              options={categories.map((cat) => ({
+                value: cat._id,
+                label: cat.name,
+              }))}
             />
-          </label>
+            <FormTextarea
+              label="Description"
+              name="description"
+              value={
+                Array.isArray(productData.description)
+                  ? productData.description.join("\n\n")
+                  : ""
+              }
+              onChange={(e) => {
+                dispatch({
+                  type: "SET_PRODUCT_DATA",
+                  payload: { description: e.target.value.split("\n\n") },
+                });
+              }}
+            />
+          </div>
+          <ImageUpload imgPreview={imgPreview} onChange={handleChange} />
         </div>
-
         <Button type="submit" className="mx-5 my-2">
           Submit
         </Button>
       </form>
     </div>
   );
+};
+
+// Extracted Components
+
+interface FormInputProps {
+  label: string;
+  name: string;
+  value: string;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  type?: string;
+  required?: boolean;
 }
+
+const FormInput: React.FC<FormInputProps> = ({
+  label,
+  name,
+  value,
+  onChange,
+  type = "text",
+  required = false,
+}) => (
+  <div className="flex flex-wrap items-center">
+    <p className="font-semibold text-lg lg:w-1/5">{label}:</p>
+    <input
+      className="p-2 ring-2 flex-1"
+      type={type}
+      name={name}
+      value={value}
+      onChange={onChange}
+      required={required}
+    />
+  </div>
+);
+
+interface FormSelectProps {
+  label: string;
+  name: string;
+  value: string;
+  onChange: (e: ChangeEvent<HTMLSelectElement>) => void;
+  options: { value: string; label: string }[];
+}
+
+const FormSelect: React.FC<FormSelectProps> = ({
+  label,
+  name,
+  value,
+  onChange,
+  options,
+}) => (
+  <div className="flex flex-wrap items-center">
+    <p className="font-semibold text-lg lg:w-1/5">{label}:</p>
+    <select
+      name={name}
+      value={value}
+      onChange={onChange}
+      className="p-2 ring-2"
+    >
+      <option value="" disabled>
+        Select a category
+      </option>
+      {options.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))}
+    </select>
+  </div>
+);
+
+interface FormTextareaProps {
+  label: string;
+  name: string;
+  value: string;
+  onChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
+}
+
+const FormTextarea: React.FC<FormTextareaProps> = ({
+  label,
+  name,
+  value,
+  onChange,
+}) => (
+  <div className="flex flex-wrap items-center">
+    <p className="font-semibold text-lg lg:w-1/5">{label}:</p>
+    <textarea
+      className="p-2 ring-2 flex-1 h-16"
+      name={name}
+      value={value}
+      onChange={onChange}
+    />
+  </div>
+);
+
+interface ImageUploadProps {
+  imgPreview: string;
+  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+}
+
+const ImageUpload: React.FC<ImageUploadProps> = ({ imgPreview, onChange }) => (
+  <label className="flex flex-col px-2 py-4 shadow-lg shadow-slate-400 rounded-xl items-center justify-between h-fit bg-yellow-50">
+    {imgPreview && (
+      <Image
+        src={imgPreview}
+        alt="Image Preview"
+        height={100}
+        width={100}
+        style={{ width: "auto", height: "auto" }}
+      />
+    )}
+    <input className="p-2" type="file" name="imgUrl" onChange={onChange} />
+  </label>
+);
 
 export default ProductForm;

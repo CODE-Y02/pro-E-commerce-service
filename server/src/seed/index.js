@@ -1,7 +1,6 @@
 const { NODE_ENV } = require("../config");
 const Category = require("../models/Category");
 const Product = require("../models/Product");
-const Variant = require("../models/Variant");
 
 const seedInitData = async () => {
   if (NODE_ENV !== "local") return;
@@ -13,7 +12,6 @@ const seedInitData = async () => {
   // await Product.deleteMany();
 
   await Category.collection.drop();
-  await Variant.collection.drop();
   await Product.collection.drop();
   // }
 

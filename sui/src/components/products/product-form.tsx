@@ -24,8 +24,6 @@ function ProductForm({ product, isNew }: Props) {
     description: [], // Ensure description is always an array
   });
 
-  const [isEditing, setIsEditing] = useState(false);
-  const [showModal, setShowModal] = useState(false);
   const [imgPreview, setImagePreview] = useState("");
   const [categories, setCategories] = useState<CategoryInterface[]>([]);
 
@@ -70,21 +68,16 @@ function ProductForm({ product, isNew }: Props) {
   // Handle form submission
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setShowModal(true);
 
-    // Confirmation dialog
-    const ans = confirm("Are you sure");
-
-    if (ans) {
-      setIsEditing(false);
-      // Handle the submit logic here
+    if (isNew) {
+      // Create new product
+    } else {
+      // Update existing product
     }
-    setShowModal(false);
   };
 
   // Handle input changes
   const handleChange = (e: any) => {
-    setIsEditing(true);
     const { name, value, type, files, checked } = e.target;
 
     if (type === "file" && files) {

@@ -44,7 +44,7 @@ const initialState: State = {
     stock: 0,
     published: false,
     category: "",
-    description: [],
+    description: "",
   },
   imgPreview: "",
   categories: [],
@@ -106,9 +106,7 @@ const ProductForm: React.FC<Props> = ({ product, isNew }) => {
         type: "SET_PRODUCT_DATA",
         payload: {
           ...product,
-          description: Array.isArray(product.description)
-            ? product.description
-            : [],
+          description: product.description || "",
         },
       });
       dispatch({ type: "SET_IMAGE_PREVIEW", payload: product.imgUrl || "" });
@@ -220,15 +218,13 @@ const ProductForm: React.FC<Props> = ({ product, isNew }) => {
             <FormTextarea
               label="Description"
               name="description"
-              value={
-                Array.isArray(productData.description)
-                  ? productData.description.join("\n\n")
-                  : ""
-              }
+              value={productData.description || ""}
               onChange={(e) => {
                 dispatch({
                   type: "SET_PRODUCT_DATA",
-                  payload: { description: e.target.value.split("\n\n") },
+                  payload: {
+                    description: e.target.value.split("\n\n"),
+                  },
                 });
               }}
             />
@@ -328,7 +324,7 @@ const FormTextarea: React.FC<FormTextareaProps> = ({
     <textarea
       className="p-2 ring-2 flex-1"
       name={name}
-      value={value}
+      value={value || ""}
       onChange={onChange}
     />
   </div>

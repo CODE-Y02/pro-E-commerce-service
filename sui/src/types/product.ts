@@ -11,7 +11,7 @@ export interface ProductInterface {
   _id: string;
   name: string;
   modelNumber: string;
-  description?: string[] | null;
+  description?: string | null;
   color?: string | null;
   imgUrl?: string | null;
   price: number;
@@ -58,7 +58,7 @@ export type getProductsInputType = {
 export type updateProductInputType = {
   id: string;
   category?: string;
-  description?: string[];
+  description?: string;
   imgUrl?: string;
   modelNumber?: string;
   name?: string;

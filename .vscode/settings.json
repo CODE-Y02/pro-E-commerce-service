@@ -1,5 +1,7 @@
 {
   "editor.wordWrap": "on",
   "editor.formatOnSave": true,
-  "diffEditor.wordWrap": "off"
+  "diffEditor.wordWrap": "off",
+  "editor.bracketPairColorization.independentColorPoolPerBracketType": true,
+  "editor.guides.bracketPairs": "active"
 }

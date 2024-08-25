@@ -29,7 +29,7 @@ function ProductsList() {
   const [page, setPage] = useState(1);
 
   const fetchProducts = useCallback(async () => {
-    const response = await getProducts({ limit: 10, page });
+    const response = await getProducts({ limit: 12, page });
 
     if (!response) return;
 
@@ -59,7 +59,7 @@ function ProductsList() {
   }, [fetchProducts, page]);
 
   return (
-    <div className="flex flex-col flex-1 ">
+    <div className="flex flex-col flex-1 gap-4 ">
       <div className="grid grid-col-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6  gap-4 flex-1">
         {productsData?.map((product) => (
           <ProductCard

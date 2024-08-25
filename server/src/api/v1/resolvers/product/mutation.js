@@ -2,7 +2,7 @@ const Product = require("../../../.../../../models/Product");
 const utils = require("../../utils/");
 const createProduct = async (_, { input }, context) => {
   try {
-    const product = new Product({ ...input, imgUrl: input?.imageUrl });
+    const product = new Product({ ...input });
     await product.save();
     // Commit the transaction if everything succeeds
     return product;

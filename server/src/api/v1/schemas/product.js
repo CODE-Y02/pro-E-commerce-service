@@ -38,7 +38,7 @@ input CreateProductInput {
   price: Float!
   stock: Int!
   published: Boolean = false
-  imageUrl: String
+  imgUrl: String
 }
 
 input UpdateProductInput {

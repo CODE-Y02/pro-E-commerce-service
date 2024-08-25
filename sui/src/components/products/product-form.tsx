@@ -223,7 +223,7 @@ const ProductForm: React.FC<Props> = ({ product, isNew }) => {
                 dispatch({
                   type: "SET_PRODUCT_DATA",
                   payload: {
-                    description: e.target.value.split("\n\n"),
+                    description: e.target.value,
                   },
                 });
               }}

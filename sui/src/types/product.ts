@@ -54,3 +54,26 @@ export type getProductsInputType = {
   limit?: number | 10;
   page?: number | 1;
 };
+
+export type updateProductInputType = {
+  id: string;
+  category?: string;
+  description?: string[];
+  imgUrl?: string;
+  modelNumber?: string;
+  name?: string;
+  price?: number;
+  published?: boolean;
+  stock?: number;
+};
+
+export type createProductInputType = {
+  name: string;
+  modelNumber: string;
+  description?: string;
+  category: string;
+  price: number;
+  stock: number;
+  published?: boolean | false;
+  imageUrl?: string;
+};

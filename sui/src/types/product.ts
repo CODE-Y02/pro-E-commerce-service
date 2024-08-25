@@ -75,5 +75,5 @@ export type createProductInputType = {
   price: number;
   stock: number;
   published?: boolean | false;
-  imageUrl?: string;
+  imgUrl?: string;
 };

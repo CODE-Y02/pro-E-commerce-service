@@ -85,9 +85,9 @@ const ProductForm: React.FC<Props> = ({ product, isNew }) => {
   const fetchCategoryData = useCallback(async () => {
     dispatch({ type: "SET_LOADING", payload: true });
     try {
-      const cat = await getCategory({});
-      dispatch({ type: "SET_CATEGORIES", payload: cat || [] });
-    } catch (error) {
+      const categories = await getCategory({});
+      dispatch({ type: "SET_CATEGORIES", payload: categories || [] });
+    } catch {
       dispatch({ type: "SET_ERROR", payload: "Error fetching categories." });
     } finally {
       dispatch({ type: "SET_LOADING", payload: false });
@@ -116,7 +116,6 @@ const ProductForm: React.FC<Props> = ({ product, isNew }) => {
 
   const createOrUpdateProduct = useCallback(async () => {
     dispatch({ type: "SET_LOADING", payload: true });
-    // await new Promise((r) => setTimeout(r, 50000));
     try {
       const {
         _id,
@@ -129,7 +128,6 @@ const ProductForm: React.FC<Props> = ({ product, isNew }) => {
         stock,
         modelNumber,
       } = state.productData;
-
       if (isNew) {
         await createProduct({
           category,
@@ -154,7 +152,8 @@ const ProductForm: React.FC<Props> = ({ product, isNew }) => {
           modelNumber,
         } as updateProductInputType);
       }
-    } catch (error) {
+      alert("Success!");
+    } catch {
       dispatch({
         type: "SET_ERROR",
         payload: "Error creating/updating product.",
@@ -162,9 +161,9 @@ const ProductForm: React.FC<Props> = ({ product, isNew }) => {
     } finally {
       dispatch({ type: "SET_LOADING", payload: false });
     }
-  }, [isNew, product, state.productData]);
+  }, [isNew, product?._id, state.productData]);
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     createOrUpdateProduct();
   };
@@ -174,14 +173,9 @@ const ProductForm: React.FC<Props> = ({ product, isNew }) => {
 
     if (type === "file" && files) {
       const file = files[0];
-      dispatch({
-        type: "SET_PRODUCT_DATA",
-        payload: { imgUrl: URL.createObjectURL(file) },
-      });
-      dispatch({
-        type: "SET_IMAGE_PREVIEW",
-        payload: URL.createObjectURL(file),
-      });
+      const fileUrl = URL.createObjectURL(file);
+      dispatch({ type: "SET_PRODUCT_DATA", payload: { imgUrl: fileUrl } });
+      dispatch({ type: "SET_IMAGE_PREVIEW", payload: fileUrl });
     } else if (type === "checkbox") {
       dispatch({ type: "SET_PRODUCT_DATA", payload: { [name]: checked } });
     } else if (type === "number") {
@@ -199,76 +193,68 @@ const ProductForm: React.FC<Props> = ({ product, isNew }) => {
   return (
     <div className="bg-white border-2 border-gray-400 rounded-lg border-opacity-50 p-2">
       {loading && (
-        <div className="fixed flex flex-col justify-center items-center top-0 bottom-0 left-0 right-0 z-50 bg-slate-500 opacity-40">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-500 opacity-40">
           <div className="text-white flex flex-col items-center gap-4">
-            <Spinner className="" />
-            <p>Loading ..</p>
+            <Spinner />
+            <p>Loading...</p>
           </div>
         </div>
       )}
       {error && <p className="text-red-500">{error}</p>}
       <form onSubmit={handleSubmit}>
-        <div className="flex flex-wrap justify-between gap-4 lg:gap-8 lg:p-4 items-center">
+        <div className="flex flex-wrap gap-4 lg:gap-8 lg:p-4">
           <div className="flex flex-col flex-1 gap-4 p-2">
             <FormInput
               label="Name"
               name="name"
-              value={productData.name || ""} // Ensure value is always a string
+              value={productData.name || ""}
               onChange={handleChange}
               required
             />
             <FormInput
               label="Model Number"
               name="modelNumber"
-              value={productData.modelNumber || ""} // Ensure value is always a string
+              value={productData.modelNumber || ""}
               onChange={handleChange}
             />
             <FormInput
               label="Price"
               name="price"
               type="number"
-              value={String(productData.price || "")} // Convert number to string
+              value={String(productData.price || "")}
               onChange={handleChange}
             />
             <FormInput
               label="Stock"
               name="stock"
               type="number"
-              value={String(productData.stock || "")} // Convert number to string
+              value={String(productData.stock || "")}
               onChange={handleChange}
             />
-            <div className="flex flex-wrap items-center">
+            <div className="flex items-center">
               <p className="font-semibold text-lg lg:w-1/5">Published:</p>
               <input
-                className="p-2 ring-2"
                 type="checkbox"
                 name="published"
                 checked={productData.published || false}
                 onChange={handleChange}
+                className="p-2 ring-2"
               />
             </div>
             <FormSelect
               label="Category"
               name="category"
-              value={productData.category || ""} // Ensure value is always a string
+              value={productData.category || ""}
               onChange={handleChange}
               options={categories.map((cat) => ({
                 value: cat._id,
-                label: cat.name || "", // Ensure label is always a string
+                label: cat.name || "",
               }))}
             />
             <FormTextarea
               label="Description"
               name="description"
               value={productData.description || ""}
-              // onChange={(e) => {
-              //   dispatch({
-              //     type: "SET_PRODUCT_DATA",
-              //     payload: {
-              //       description: e.target.value,
-              //     },
-              //   });
-              // }}
               onChange={handleChange}
             />
           </div>
@@ -301,15 +287,15 @@ const FormInput: React.FC<FormInputProps> = ({
   type = "text",
   required = false,
 }) => (
-  <div className="flex flex-wrap items-center">
+  <div className="flex items-center">
     <p className="font-semibold text-lg lg:w-1/5">{label}:</p>
     <input
-      className="p-2 ring-2 flex-1"
       type={type}
       name={name}
-      value={String(value)} // Convert value to string
+      value={value}
       onChange={onChange}
       required={required}
+      className="p-2 ring-2 flex-1"
     />
   </div>
 );
@@ -329,7 +315,7 @@ const FormSelect: React.FC<FormSelectProps> = ({
   onChange,
   options,
 }) => (
-  <div className="flex flex-wrap items-center">
+  <div className="flex items-center">
     <p className="font-semibold text-lg lg:w-1/5">{label}:</p>
     <select
       name={name}
@@ -362,13 +348,13 @@ const FormTextarea: React.FC<FormTextareaProps> = ({
   value,
   onChange,
 }) => (
-  <div className="flex flex-wrap items-center">
+  <div className="flex items-center">
     <p className="font-semibold text-lg lg:w-1/5">{label}:</p>
     <textarea
-      className="p-2 ring-2 flex-1"
       name={name}
-      value={value || ""}
+      value={value}
       onChange={onChange}
+      className="p-2 ring-2 flex-1"
     />
   </div>
 );

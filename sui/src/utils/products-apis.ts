@@ -121,7 +121,7 @@ export const updateProduct = async (input: updateProductInputType) => {
     variables: { input },
   };
 
-  console.log("\n UPDATING  \n", input);
+  console.log("\n UPDATING PRODUCT \n", input);
 
   try {
     const res = await fetch(API_ENDPOINT, {
@@ -139,11 +139,15 @@ export const updateProduct = async (input: updateProductInputType) => {
       throw new Error(`HTTP error! Status: ${res.status}`);
     }
 
-    const data = await res.json();
+    const { data, errors } = await res.json();
 
-    console.log("\n UPDATE DONE  \n", data);
+    // if (errors?.length) {
+    //   throw new Error(errors);
+    // }
 
-    return data?.data?.updateProduct;
+    console.log("\n UPDATE PRODUCT DONE  \n", data);
+
+    return data?.updateProduct;
   } catch (error) {
     console.error("Error updating product:", error);
     throw error; // Re-throw the error after logging it
@@ -157,6 +161,8 @@ export const createProduct = async (input: createProductInputType) => {
     variables: { input },
   };
 
+  console.log("\n CREATING PRODUCT  \n", input);
+
   try {
     const res = await fetch(API_ENDPOINT, {
       method: "POST",
@@ -168,13 +174,13 @@ export const createProduct = async (input: createProductInputType) => {
       },
     });
 
-    if (!res.ok) {
-      throw new Error(`HTTP error! Status: ${res.status}`);
-    }
-
     const data = await res.json();
 
-    console.log("product created ");
+    if(data?.errors){
+      throw new Error(data.errors)
+    }
+
+    console.log("\n CREATE PRODUCT DONE  \n", data);
 
     return data?.data?.createProduct;
   } catch (error) {

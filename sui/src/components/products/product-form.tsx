@@ -17,6 +17,7 @@ import React, {
 import { Button } from "../ui/button";
 import { getCategory } from "@/utils/categories-api";
 import { createProduct, updateProduct } from "@/utils/products-apis";
+import Spinner from "../spinner";
 
 // Action Types
 type Action =
@@ -115,13 +116,42 @@ const ProductForm: React.FC<Props> = ({ product, isNew }) => {
 
   const createOrUpdateProduct = useCallback(async () => {
     dispatch({ type: "SET_LOADING", payload: true });
+    // await new Promise((r) => setTimeout(r, 50000));
     try {
+      const {
+        _id,
+        category,
+        description,
+        imgUrl,
+        published,
+        name,
+        price,
+        stock,
+        modelNumber,
+      } = state.productData;
+
       if (isNew) {
-        await createProduct(state.productData as createProductInputType);
+        await createProduct({
+          category,
+          description,
+          imgUrl,
+          published,
+          name,
+          price,
+          stock,
+          modelNumber,
+        } as createProductInputType);
       } else if (product?._id) {
         await updateProduct({
-          id: product._id,
-          ...state.productData,
+          id: _id,
+          category,
+          description,
+          imgUrl,
+          published,
+          name,
+          price,
+          stock,
+          modelNumber,
         } as updateProductInputType);
       }
     } catch (error) {
@@ -154,6 +184,11 @@ const ProductForm: React.FC<Props> = ({ product, isNew }) => {
       });
     } else if (type === "checkbox") {
       dispatch({ type: "SET_PRODUCT_DATA", payload: { [name]: checked } });
+    } else if (type === "number") {
+      dispatch({
+        type: "SET_PRODUCT_DATA",
+        payload: { [name]: Number(value) },
+      });
     } else {
       dispatch({ type: "SET_PRODUCT_DATA", payload: { [name]: value } });
     }
@@ -163,7 +198,14 @@ const ProductForm: React.FC<Props> = ({ product, isNew }) => {
 
   return (
     <div className="bg-white border-2 border-gray-400 rounded-lg border-opacity-50 p-2">
-      {loading && <p>Loading...</p>}
+      {loading && (
+        <div className="fixed flex flex-col justify-center items-center top-0 bottom-0 left-0 right-0 z-50 bg-slate-500 opacity-40">
+          <div className="text-white flex flex-col items-center gap-4">
+            <Spinner className="" />
+            <p>Loading ..</p>
+          </div>
+        </div>
+      )}
       {error && <p className="text-red-500">{error}</p>}
       <form onSubmit={handleSubmit}>
         <div className="flex flex-wrap justify-between gap-4 lg:gap-8 lg:p-4 items-center">
@@ -219,14 +261,15 @@ const ProductForm: React.FC<Props> = ({ product, isNew }) => {
               label="Description"
               name="description"
               value={productData.description || ""}
-              onChange={(e) => {
-                dispatch({
-                  type: "SET_PRODUCT_DATA",
-                  payload: {
-                    description: e.target.value,
-                  },
-                });
-              }}
+              // onChange={(e) => {
+              //   dispatch({
+              //     type: "SET_PRODUCT_DATA",
+              //     payload: {
+              //       description: e.target.value,
+              //     },
+              //   });
+              // }}
+              onChange={handleChange}
             />
           </div>
           <ImageUpload imgPreview={imgPreview} onChange={handleChange} />

@@ -121,6 +121,8 @@ export const updateProduct = async (input: updateProductInputType) => {
     variables: { input },
   };
 
+  console.log("\n UPDATING  \n", input);
+
   try {
     const res = await fetch(API_ENDPOINT, {
       method: "POST",
@@ -130,6 +132,7 @@ export const updateProduct = async (input: updateProductInputType) => {
         Accept: "application/json",
         Authorization: `Bearer YOUR_AUTH_TOKEN`, // Replace with your auth token
       },
+      cache: "no-cache",
     });
 
     if (!res.ok) {
@@ -137,6 +140,8 @@ export const updateProduct = async (input: updateProductInputType) => {
     }
 
     const data = await res.json();
+
+    console.log("\n UPDATE DONE  \n", data);
 
     return data?.data?.updateProduct;
   } catch (error) {
@@ -168,6 +173,8 @@ export const createProduct = async (input: createProductInputType) => {
     }
 
     const data = await res.json();
+
+    console.log("product created ");
 
     return data?.data?.createProduct;
   } catch (error) {

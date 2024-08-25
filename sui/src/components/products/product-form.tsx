@@ -141,9 +141,7 @@ const ProductForm: React.FC<Props> = ({ product, isNew }) => {
     createOrUpdateProduct();
   };
 
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-  ): void => {
+  const handleChange = (e: any): void => {
     const { name, value, type, files, checked } = e.target;
 
     if (type === "file" && files) {
@@ -175,28 +173,28 @@ const ProductForm: React.FC<Props> = ({ product, isNew }) => {
             <FormInput
               label="Name"
               name="name"
-              value={productData.name || ""}
+              value={productData.name || ""} // Ensure value is always a string
               onChange={handleChange}
               required
             />
             <FormInput
               label="Model Number"
               name="modelNumber"
-              value={productData.modelNumber || ""}
+              value={productData.modelNumber || ""} // Ensure value is always a string
               onChange={handleChange}
             />
             <FormInput
               label="Price"
               name="price"
               type="number"
-              value={productData.price || ""}
+              value={String(productData.price || "")} // Convert number to string
               onChange={handleChange}
             />
             <FormInput
               label="Stock"
               name="stock"
               type="number"
-              value={productData.stock || ""}
+              value={String(productData.stock || "")} // Convert number to string
               onChange={handleChange}
             />
             <div className="flex flex-wrap items-center">
@@ -212,11 +210,11 @@ const ProductForm: React.FC<Props> = ({ product, isNew }) => {
             <FormSelect
               label="Category"
               name="category"
-              value={productData.category || ""}
+              value={productData.category || ""} // Ensure value is always a string
               onChange={handleChange}
               options={categories.map((cat) => ({
                 value: cat._id,
-                label: cat.name,
+                label: cat.name || "", // Ensure label is always a string
               }))}
             />
             <FormTextarea
@@ -270,7 +268,7 @@ const FormInput: React.FC<FormInputProps> = ({
       className="p-2 ring-2 flex-1"
       type={type}
       name={name}
-      value={value}
+      value={String(value)} // Convert value to string
       onChange={onChange}
       required={required}
     />
@@ -328,7 +326,7 @@ const FormTextarea: React.FC<FormTextareaProps> = ({
   <div className="flex flex-wrap items-center">
     <p className="font-semibold text-lg lg:w-1/5">{label}:</p>
     <textarea
-      className="p-2 ring-2 flex-1 h-16"
+      className="p-2 ring-2 flex-1"
       name={name}
       value={value}
       onChange={onChange}
@@ -342,18 +340,28 @@ interface ImageUploadProps {
 }
 
 const ImageUpload: React.FC<ImageUploadProps> = ({ imgPreview, onChange }) => (
-  <label className="flex flex-col px-2 py-4 shadow-lg shadow-slate-400 rounded-xl items-center justify-between h-fit bg-yellow-50">
+  <div className="flex flex-col items-center">
     {imgPreview && (
-      <Image
-        src={imgPreview}
-        alt="Image Preview"
-        height={100}
-        width={100}
-        style={{ width: "auto", height: "auto" }}
-      />
+      <div className="relative w-full h-72">
+        <Image
+          src={imgPreview}
+          alt="Product Image Preview"
+          fill
+          style={{ objectFit: "contain" }}
+        />
+      </div>
     )}
-    <input className="p-2" type="file" name="imgUrl" onChange={onChange} />
-  </label>
+    <label className="text-center p-2 mt-2 w-full border-2 border-gray-400 border-opacity-50 rounded-lg cursor-pointer">
+      Upload Image
+      <input
+        type="file"
+        name="imgUrl"
+        accept="image/*"
+        className="hidden"
+        onChange={onChange}
+      />
+    </label>
+  </div>
 );
 
 export default ProductForm;
